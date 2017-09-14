@@ -37,21 +37,40 @@ public class MyApplication {
     }
 
     private static void createTables(Connection connection) {
-        Statement stmt = null;
+        String sql = "CREATE TABLE IF NOT EXISTS EMPLOYEE"  +
+                "(ID INT PRIMARY KEY            NOT NULL,"  +
+                " NAME           VARCHAR(50)    NOT NULL, " +
+                " AGE            INT            NOT NULL, " +
+                " HIREDATE       DATE,                    " +
+                " ADDRESS        CHAR(50),                " +
+                " SALARY         REAL)";
+
+        createTableImpl(connection, sql);
+
+               sql = "CREATE TABLE IF NOT EXISTS DEPARTMENT"  +
+                "(ID INT PRIMARY KEY            NOT NULL,"  +
+                " NAME           VARCHAR(50)    NOT NULL, " +
+                " ADDRESS        CHAR(50))";
+
+        createTableImpl(connection, sql);
+
+        sql = "CREATE TABLE IF NOT EXISTS EMPLOYEE_DEPARTMENT"  +
+                "(ID             INT PRIMARY KEY            NOT NULL,"  +
+                " EMPLOYEE_ID    INT                        NOT NULL, " +
+                " DEPT_ID        INT                        NOT NULL) ";
+
+        createTableImpl(connection, sql);
+    }
+
+    private static void createTableImpl(Connection connection, String sql) {
+        Statement stmt;
 
         try {
             stmt = connection.createStatement();
-
-            String sql = "CREATE TABLE IF NOT EXISTS EMPLOYEE"  +
-                                "(ID INT PRIMARY KEY            NOT NULL,"  +
-                                " NAME           VARCHAR(50)    NOT NULL, " +
-                                " AGE            INT            NOT NULL, " +
-                                " ADDRESS        CHAR(50),                " +
-                                " SALARY         REAL)";
             stmt.executeUpdate(sql);
             stmt.close();
 
-            System.out.println("Table EMPLOYEE has been created successfully");
+            System.out.println("Table has been created successfully");
         } catch (SQLException e) {
             System.err.println(e);
         }
