@@ -1,5 +1,8 @@
 package be.ictdynamic.training;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -10,6 +13,8 @@ import java.sql.Statement;
  */
 public class MyApplication {
 
+    private static final Logger LOGGER = Logger.getLogger(MyApplication.class);
+
     public static void main(String args[]) {
         Connection connection = null;
 
@@ -17,11 +22,11 @@ public class MyApplication {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:test.db");
 
-            System.out.println("Opened database successfully");
+            LOGGER.info("Opened database successfully");
             createTables(connection);
 
         } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            LOGGER.error("!!!Something went wrong: message = " + e.getMessage());
             System.exit(-1);
         } finally {
             try {
@@ -30,7 +35,7 @@ public class MyApplication {
                 }
             } catch (SQLException e) {
                 // connection close failed.
-                System.err.println(e);
+                LOGGER.error("!!!Something went wrong: message = " + e.getMessage());
             }
         }
 
@@ -70,9 +75,9 @@ public class MyApplication {
             stmt.executeUpdate(sql);
             stmt.close();
 
-            System.out.println("Table has been created successfully");
+            LOGGER.info("Table has been created successfully");
         } catch (SQLException e) {
-            System.err.println(e);
+            LOGGER.error("!!!Something went wrong: message = " + e.getMessage());
         }
 
     }
