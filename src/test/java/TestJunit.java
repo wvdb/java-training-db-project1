@@ -1,3 +1,4 @@
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -7,8 +8,15 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestJunit {
     @Test
-    public void dummyTest() {
+    public void dummyTestHappyFlow() {
         String str = "Junit is working fine";
         assertEquals("Junit is working fine",str);
+    }
+
+    @Ignore("ignored because this test will always fail")
+    @Test
+    public void dummyTestSadFlow() {
+        String str = "Junit is working fine";
+        assertEquals("Junit is working fine", str.toUpperCase());
     }
 }
