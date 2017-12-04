@@ -1,6 +1,7 @@
 package be.ictdynamic.training;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -10,7 +11,7 @@ import java.sql.Statement;
  * Created by wvdbrand on 18/09/2017.
  */
 public class CreateDatabase {
-    private static final Logger LOGGER = Logger.getLogger(CreateDatabase.class);
+    private static final Logger LOGGER = LogManager.getLogger(CreateDatabase.class);
 
     static void createTables(Connection connection) {
         String sql = "CREATE TABLE IF NOT EXISTS EMPLOYEE"  +
@@ -38,7 +39,7 @@ public class CreateDatabase {
         createTableImpl(connection, sql);
     }
 
-    static void createTableImpl(Connection connection, String sql) {
+    private static void createTableImpl(Connection connection, String sql) {
         Statement stmt;
 
         try {
