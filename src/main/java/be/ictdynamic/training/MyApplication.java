@@ -14,8 +14,6 @@ import java.util.Scanner;
 public class MyApplication {
     private static final Logger LOGGER = LogManager.getLogger(MyApplication.class);
 
-    public static final String SEEFBIER_LOGO_FILE = "C:\\wim\\oak3 - cronos- training\\cursus_data_input_output\\seefbier.jpg";
-
     private static final String SQL_1_BEER =
             "SELECT naam, alcohol FROM BIEREN ORDER BY naam ASC";
 
@@ -103,7 +101,8 @@ public class MyApplication {
                 MyApplication.oefeningBeers8();
                 break;
             case 11:
-                MyApplication.oefeningBeers11();
+                MyApplication myApplication = new MyApplication();
+                myApplication.oefeningBeers11();
                 break;
             case 99:
                 MyApplication.oefeningStoredProc99();
@@ -241,15 +240,19 @@ public class MyApplication {
         }
     }
 
-    private static void oefeningBeers11() throws FileNotFoundException {
+    private void oefeningBeers11() throws FileNotFoundException {
         // alter table brouwers add logo blob null;
+
+        final String SEEFBIER_LOGO_LOCAAL_FILE = "C:\\wim\\oak3 - cronos- training\\cursus_data_input_output\\seefbier.jpg";
+        final String SEEFBIER_LOGO_RESOURCE_FILE = "seefbier.jpg";
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", "root", "");) {
             PreparedStatement stmt = connection.prepareStatement(SQL_11_BEER, Statement.RETURN_GENERATED_KEYS);
 
-//            stmt.setBlob(1, Reader);
+            File file = new File(SEEFBIER_LOGO_LOCAAL_FILE);
+//            ClassLoader classLoader = this.getClass().getClassLoader();
+//            File file = new File(classLoader.getResource(SEEFBIER_LOGO_RESOURCE_FILE).getFile());
 
-            File file = new File(SEEFBIER_LOGO_FILE);
             FileInputStream fileInputStream = new FileInputStream(file);
             stmt.setBinaryStream(1, fileInputStream);
 
