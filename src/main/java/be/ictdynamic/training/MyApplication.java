@@ -3,8 +3,11 @@ package be.ictdynamic.training;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -29,6 +32,12 @@ public class MyApplication {
                     " WHERE naam like ? " +
                     " ORDER BY naam ASC";
 
+    private static final String SQL_6C_PLANT_BESTELLINGEN_BESTEL_DATUM_IN_RANGE =
+            " SELECT bestelnr, b_datum, l_datum " +
+                    " FROM BESTEL " +
+                    " WHERE b_datum between ? and ?" +
+                    " ORDER BY b_datum ASC";
+
     private static final String SQL_7_BEER =
             " SELECT count(*) " +
                     " FROM BIEREN ";
@@ -40,6 +49,10 @@ public class MyApplication {
     private static final String SQL_11_BEER =
             " INSERT into brouwers (brnaam, adres, postcode, gemeente, omzet, logo) " +
                     " VALUES ('Antwerpse Brouw Compagnie', 'Groenplaats 1', 2000, 'Antwerpen', 0, ?) ";
+
+    public static final String JDBC_MYSQL_LOCALHOST_BIEREN = "jdbc:mysql://localhost/bieren";
+    public static final String ROOT = "root";
+    public static final String EMPTY_ROOT_PASSWORD = "";
 
 //    public static void main(String args[]) {
 //        Connection connection = null;
@@ -130,11 +143,10 @@ public class MyApplication {
     }
 
     private static void oefeningBeers2() {
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", "root", "");) {
-            Statement stmt = connection.createStatement();
-            ResultSet resultSet = stmt.executeQuery(SQL_1_BEER);
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", ROOT, EMPTY_ROOT_PASSWORD);
+             Statement stmt = connection.createStatement();
+             ResultSet resultSet = stmt.executeQuery(SQL_1_BEER) ) {
             logResultsetBeers2(resultSet);
-            stmt.close();
         } catch (SQLException e) {
             LOGGER.error("!!!Error when executing sql. Exception = {}, message = {}.", e, e.getMessage());
             System.exit(-1);
@@ -142,11 +154,10 @@ public class MyApplication {
     }
 
     private static void oefeningBeers3() {
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", "root", "");) {
-            Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            ResultSet resultSet = stmt.executeQuery(SQL_1_BEER);
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", ROOT, EMPTY_ROOT_PASSWORD);
+             Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+             ResultSet resultSet = stmt.executeQuery(SQL_1_BEER)) {
             logResultsetBeers3(resultSet);
-            stmt.close();
         } catch (SQLException e) {
             LOGGER.error("!!!Error when executing sql. Exception = {}, message = {}.", e, e.getMessage());
             System.exit(-1);
@@ -154,24 +165,33 @@ public class MyApplication {
     }
 
     private static void oefeningBeers6() {
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", "root", "");) {
-            PreparedStatement stmt = connection.prepareStatement(SQL_6A_BEER);
+        try (Connection connection = DriverManager.getConnection(JDBC_MYSQL_LOCALHOST_BIEREN, ROOT, EMPTY_ROOT_PASSWORD);
+             PreparedStatement stmt = connection.prepareStatement(SQL_6A_BEER)) {
             stmt.setFloat(1, 3.0f);
             stmt.setFloat(2, 4.0f);
             ResultSet resultSet = stmt.executeQuery();
             logResultsetBeers2(resultSet);
-            stmt.close();
         } catch (SQLException e) {
             LOGGER.error("!!!Error when executing sql. Exception = {}, message = {}.", e, e.getMessage());
             System.exit(-1);
         }
 
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", "root", "");) {
-            PreparedStatement stmt = connection.prepareStatement(SQL_6B_BEER);
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", ROOT, EMPTY_ROOT_PASSWORD);
+             PreparedStatement stmt = connection.prepareStatement(SQL_6B_BEER)) {
             stmt.setString(1, "%tripel%");
             ResultSet resultSet = stmt.executeQuery();
             logResultsetBeers2(resultSet);
-            stmt.close();
+        } catch (SQLException e) {
+            LOGGER.error("!!!Error when executing sql. Exception = {}, message = {}.", e, e.getMessage());
+            System.exit(-1);
+        }
+
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/plantv", ROOT, EMPTY_ROOT_PASSWORD);
+             PreparedStatement stmt = connection.prepareStatement(SQL_6C_PLANT_BESTELLINGEN_BESTEL_DATUM_IN_RANGE)) {
+            stmt.setObject(1, LocalDate.of(1999, 3, 1));
+            stmt.setObject(2, LocalDate.of(1999, 3, 31));
+            ResultSet resultSet = stmt.executeQuery();
+            logResultsetBestellingen(resultSet);
         } catch (SQLException e) {
             LOGGER.error("!!!Error when executing sql. Exception = {}, message = {}.", e, e.getMessage());
             System.exit(-1);
@@ -180,7 +200,7 @@ public class MyApplication {
     }
 
     private static void oefeningBeers7() throws InterruptedException {
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", "root", "");) {
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", ROOT, EMPTY_ROOT_PASSWORD);) {
 //            connection.setAutoCommit(false);
             connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 //            connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
@@ -208,8 +228,8 @@ public class MyApplication {
     }
 
     private static void oefeningBeers8() {
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", "root", "");) {
-            Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", ROOT, EMPTY_ROOT_PASSWORD);
+             Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE) ) {
             int numberOfBrouwersUpdated = 0;
 
             ResultSet resultSet = stmt.executeQuery(SQL_8_BEER);
@@ -233,7 +253,6 @@ public class MyApplication {
 
             LOGGER.info("Aantal brouwers aangepast : {}.", numberOfBrouwersUpdated);
 
-            stmt.close();
         } catch (SQLException e) {
             LOGGER.error("!!!Error when executing sql. Exception = {}, message = {}.", e, e.getMessage());
             System.exit(-1);
@@ -246,10 +265,11 @@ public class MyApplication {
         final String SEEFBIER_LOGO_LOCAAL_FILE = "C:\\wim\\oak3 - cronos- training\\cursus_data_input_output\\seefbier.jpg";
         final String SEEFBIER_LOGO_RESOURCE_FILE = "seefbier.jpg";
 
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", "root", "");) {
-            PreparedStatement stmt = connection.prepareStatement(SQL_11_BEER, Statement.RETURN_GENERATED_KEYS);
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", ROOT, EMPTY_ROOT_PASSWORD);
+             PreparedStatement stmt = connection.prepareStatement(SQL_11_BEER, Statement.RETURN_GENERATED_KEYS) ) {
 
             File file = new File(SEEFBIER_LOGO_LOCAAL_FILE);
+            // werkt niet tgv spaces
 //            ClassLoader classLoader = this.getClass().getClassLoader();
 //            File file = new File(classLoader.getResource(SEEFBIER_LOGO_RESOURCE_FILE).getFile());
 
@@ -266,8 +286,6 @@ public class MyApplication {
             }
 
             LOGGER.info("Antwerpen heeft een nieuwe brouwerij. Brouwerij nr = {}.", brouwerNr);
-
-            stmt.close();
         } catch (SQLException e) {
             LOGGER.error("!!!Error when executing sql. Exception = {}, message = {}.", e, e.getMessage());
             System.exit(-1);
@@ -275,11 +293,10 @@ public class MyApplication {
     }
 
     private static void oefeningStoredProc99() {
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", "root", "");) {
-            CallableStatement stmt = connection.prepareCall("call myStoredProc1(14, 15)");
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", ROOT, EMPTY_ROOT_PASSWORD);
+             CallableStatement stmt = connection.prepareCall("call myStoredProc1(14, 15)") ) {
             ResultSet resultSet = stmt.executeQuery();
             logResultsetBeers99(resultSet);
-            stmt.close();
         } catch (SQLException e) {
             LOGGER.error("!!!Error when executing sql. Exception = {}, message = {}.", e, e.getMessage());
             System.exit(-1);
@@ -312,6 +329,18 @@ public class MyApplication {
         while (resultSet.previous()) {
             LOGGER.info("Bier: {}, {}.", resultSet.getString(1), resultSet.getDouble(2));
         }
+    }
+
+    private static void logResultsetBestellingen(ResultSet resultSet) throws SQLException {
+        int numRowsRetrieved=0;
+        while (resultSet.next()) {
+            String naam = resultSet.getString(1);
+            LocalDate bestelDatum = resultSet.getDate(2).toLocalDate();
+            LocalDate leverDatum = resultSet.getDate(3).toLocalDate();
+            LOGGER.info("Bestelling: {}, {}, {}.", naam, bestelDatum, leverDatum);
+            numRowsRetrieved +=1;
+        }
+        LOGGER.info("Number of bestellingen retrieved = {}.", numRowsRetrieved);
     }
 
     private static void logResultsetBeers99(ResultSet resultSet) throws SQLException {
