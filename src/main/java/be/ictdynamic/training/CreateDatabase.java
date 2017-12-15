@@ -40,14 +40,12 @@ public class CreateDatabase {
     }
 
     private static void createTableImpl(Connection connection, String sql) {
-        Statement stmt;
-
         try {
-            stmt = connection.createStatement();
-            stmt.executeUpdate(sql);
+            Statement stmt = connection.createStatement();
+            int dummyReturnValue = stmt.executeUpdate(sql);
             stmt.close();
 
-            LOGGER.info("Table has been created successfully");
+            LOGGER.info("Table has been created successfully (dummyReturnValue = {})", dummyReturnValue);
         } catch (SQLException e) {
             LOGGER.error("!!!Something went wrong: message = " + e.getMessage());
         }
