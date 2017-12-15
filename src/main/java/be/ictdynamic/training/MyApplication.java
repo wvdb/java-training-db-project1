@@ -333,6 +333,7 @@ public class MyApplication {
 
     private static void logResultsetBestellingen(ResultSet resultSet) throws SQLException {
         int numRowsRetrieved=0;
+
         while (resultSet.next()) {
             String naam = resultSet.getString(1);
             LocalDate bestelDatum = resultSet.getDate(2).toLocalDate();
