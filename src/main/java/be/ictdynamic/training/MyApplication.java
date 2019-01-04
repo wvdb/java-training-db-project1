@@ -108,7 +108,7 @@ public class MyApplication {
                 MyApplication.oefeningBeers6();
                 break;
             case 7:
-                MyApplication.oefeningBeers7();
+                MyApplication.oefeningTransactions7();
                 break;
             case 8:
                 MyApplication.oefeningBeers8();
@@ -199,21 +199,32 @@ public class MyApplication {
 
     }
 
-    private static void oefeningBeers7() throws InterruptedException {
+    private static void oefeningTransactions7() throws InterruptedException {
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", ROOT, EMPTY_ROOT_PASSWORD);) {
-//            connection.setAutoCommit(false);
+            connection.setAutoCommit(false);
+
+            // with this transaction-isolation we allow a dirty read
+            // * delete has been done by second transaction but has not been committed
+            // * still, the count(*) already takes into account the delete
+
             connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+
+            // with this transaction-isolation we allow a dirty read
+            // * delete has been done by second transaction but has not been committed
+            // * the count(*) doesn't take into account the delete
+
 //            connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+
 //            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+
+            //             let's sleep a little so we can modify the DB
+            LOGGER.info("Ready to sleep");
+            Thread.sleep(30_000);
+            LOGGER.info("We slept well");
 
             PreparedStatement stmt = connection.prepareStatement(SQL_7_BEER);
             ResultSet resultSet = stmt.executeQuery();
             int numberOfBeers = 0;
-
-            // let's sleep a little so we can modify the DB
-//            LOGGER.info("Ready to sleep");
-//            Thread.sleep(60_000);
-//            LOGGER.info("We slept well");
 
             while (resultSet.next()) {
                 numberOfBeers = resultSet.getInt(1);
