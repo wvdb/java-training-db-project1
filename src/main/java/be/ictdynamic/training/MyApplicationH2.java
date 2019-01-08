@@ -14,8 +14,8 @@ import java.util.Scanner;
 /**
  * Created by wvdbrand on 14/09/2017.
  */
-public class MyApplication {
-    private static final Logger LOGGER = LogManager.getLogger(MyApplication.class);
+public class MyApplicationH2 {
+    private static final Logger LOGGER = LogManager.getLogger(MyApplicationH2.class);
 
     private static final String SQL_1_BEER =
             "SELECT naam, alcohol FROM BIEREN ORDER BY naam ASC";
@@ -54,31 +54,6 @@ public class MyApplication {
     public static final String ROOT = "root";
     public static final String EMPTY_ROOT_PASSWORD = "";
 
-//    public static void main(String args[]) {
-//        Connection connection = null;
-//
-//        try {
-//            Class.forName("org.sqlite.JDBC");
-//            connection = DriverManager.getConnection("jdbc:sqlite:test.db");
-//
-//            LOGGER.info("Opened database successfully");
-//            CreateDatabase.createTables(connection);
-//            LOGGER.info("Created database successfully");
-//
-//        } catch (Exception e) {
-//            LOGGER.error("!!!Something went wrong: message = " + e.getMessage());
-//            System.exit(-1);
-//        } finally {
-//            try {
-//                if (connection != null) {
-//                    connection.close();
-//                }
-//            } catch (SQLException e) {
-//                // connection close failed.
-//                LOGGER.error("!!!Something went wrong: message = " + e.getMessage());
-//            }
-//        }
-
     public static void main(String args[]) throws InterruptedException, FileNotFoundException {
         int oefeningInteger = Integer.MIN_VALUE;
 
@@ -96,29 +71,29 @@ public class MyApplication {
 
         switch (oefeningInteger) {
             case 1:
-                MyApplication.oefeningSqlite();
+                MyApplicationH2.oefeningBasic();
                 break;
             case 2:
-                MyApplication.oefeningBeers2();
+                MyApplicationH2.oefeningBeers2();
                 break;
             case 3:
-                MyApplication.oefeningBeers3();
+                MyApplicationH2.oefeningBeers3();
                 break;
             case 6:
-                MyApplication.oefeningBeers6();
+                MyApplicationH2.oefeningBeers6();
                 break;
             case 7:
-                MyApplication.oefeningTransactions7();
+                MyApplicationH2.oefeningTransactions7();
                 break;
             case 8:
-                MyApplication.oefeningBeers8();
+                MyApplicationH2.oefeningBeers8();
                 break;
             case 11:
-                MyApplication myApplication = new MyApplication();
-                myApplication.oefeningBeers11();
+                MyApplicationH2 myApplicationMySQL = new MyApplicationH2();
+                myApplicationMySQL.oefeningBeers11();
                 break;
             case 99:
-                MyApplication.oefeningStoredProc99();
+                MyApplicationH2.oefeningStoredProc99();
                 break;
             default:
                 LOGGER.error("Geen oefening voorzien");
@@ -126,20 +101,17 @@ public class MyApplication {
 
     }
 
-    private static void oefeningSqlite() {
-        // Class.forName("org.sqlite.JDBC");
+    private static void oefeningBasic() {
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:file:./bieren_h2.db");) {
 
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:test.db");) {
-
-            LOGGER.info("Opened database successfully");
+            LOGGER.info("Opened connection to database successfully");
             CreateDatabase.createTables(connection);
-            LOGGER.info("Created database successfully");
+            LOGGER.info("Created Tables successfully");
 
-        } catch (SQLException e) {
-            LOGGER.error("!!!Error when creating DB. Exception = {}, message = {}.", e, e.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("!!!Error when creating Tables. Exception = {}, message = {}.", e, e.getMessage());
             System.exit(-1);
         }
-
     }
 
     private static void oefeningBeers2() {
@@ -217,7 +189,7 @@ public class MyApplication {
 
 //            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
 
-            //             let's sleep a little so we can modify the DB
+            // let's sleep a little so we can modify the DB
             LOGGER.info("Ready to sleep");
             Thread.sleep(30_000);
             LOGGER.info("We slept well");

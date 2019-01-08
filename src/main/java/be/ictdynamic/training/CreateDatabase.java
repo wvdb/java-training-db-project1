@@ -37,6 +37,16 @@ public class CreateDatabase {
                 " DEPT_ID        INT                        NOT NULL) ";
 
         createTableImpl(connection, sql);
+
+        sql = "CREATE TABLE IF NOT EXISTS BIEREN2"  +
+                 " (BierNr INT PRIMARY KEY AUTO_INCREMENT NOT NULL, " +
+                 "  Naam  VARCHAR(100), " +
+                 "  BrouwerNr  INT, " +
+                 "  PoortNr  INT, " +
+                 "  Alcohol  DOUBLE " +
+                " ) ";
+
+        createTableImpl(connection, sql);
     }
 
     private static void createTableImpl(Connection connection, String sql) {
