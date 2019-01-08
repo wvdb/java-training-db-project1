@@ -13,7 +13,7 @@ import java.sql.Statement;
 public class CreateDatabase {
     private static final Logger LOGGER = LogManager.getLogger(CreateDatabase.class);
 
-    static void createTables(Connection connection) {
+    static void createTables(Connection connection) throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS EMPLOYEE"  +
                 "(ID INT PRIMARY KEY            NOT NULL,"  +
                 " NAME           VARCHAR(50)    NOT NULL, " +
@@ -49,16 +49,10 @@ public class CreateDatabase {
         createTableImpl(connection, sql);
     }
 
-    private static void createTableImpl(Connection connection, String sql) {
-        try {
+    private static void createTableImpl(Connection connection, String sql) throws SQLException {
             Statement stmt = connection.createStatement();
             int dummyReturnValue = stmt.executeUpdate(sql);
             stmt.close();
-
-            LOGGER.info("Table has been created successfully (dummyReturnValue = {})", dummyReturnValue);
-        } catch (SQLException e) {
-            LOGGER.error("!!!Something went wrong: message = " + e.getMessage());
-        }
 
     }
 

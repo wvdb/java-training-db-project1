@@ -108,7 +108,7 @@ public class MyApplicationH2 {
             CreateDatabase.createTables(connection);
             LOGGER.info("Created Tables successfully");
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             LOGGER.error("!!!Error when creating Tables. Exception = {}, message = {}.", e, e.getMessage());
             System.exit(-1);
         }
