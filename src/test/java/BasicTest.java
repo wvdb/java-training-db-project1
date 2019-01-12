@@ -1,6 +1,5 @@
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -17,7 +16,7 @@ public class BasicTest {
         assertEquals("this is a dummy Test", "Junit is working fine",str);
     }
 
-    @Ignore("ignored because this test will always fail")
+//    @Ignore("ignored because this test will always fail")
     @Test
     public void dummyTestSadFlow() {
         String str = "Junit is working fine";

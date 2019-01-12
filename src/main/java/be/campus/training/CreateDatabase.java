@@ -25,8 +25,8 @@ public class CreateDatabase {
         createTableImpl(connection, sql);
 
         sql = "CREATE TABLE IF NOT EXISTS DEPARTMENT"  +
-                "(ID INT PRIMARY KEY            NOT NULL,"  +
-                " NAME           VARCHAR(50)    NOT NULL, " +
+                "(ID             INT PRIMARY KEY            NOT NULL,"  +
+                " NAME           VARCHAR(50)                NOT NULL, " +
                 " ADDRESS        CHAR(50))";
 
         createTableImpl(connection, sql);
@@ -38,12 +38,27 @@ public class CreateDatabase {
 
         createTableImpl(connection, sql);
 
-        sql = "CREATE TABLE IF NOT EXISTS BIEREN2"  +
-                 " (BierNr INT PRIMARY KEY AUTO_INCREMENT NOT NULL, " +
-                 "  Naam  VARCHAR(100), " +
-                 "  BrouwerNr  INT, " +
-                 "  PoortNr  INT, " +
-                 "  Alcohol  DOUBLE " +
+        sql = "CREATE TABLE IF NOT EXISTS PROJECT"  +
+                "(ID             VARCHAR(50) PRIMARY KEY    NOT NULL, " +
+                " NAME           VARCHAR(50)                NOT NULL, " +
+                " START_DATE     DATE                       NOT NULL, " +
+                " END_DATE       DATE                                )";
+
+        createTableImpl(connection, sql);
+
+        sql = "CREATE TABLE IF NOT EXISTS BIER_ACERTA"  +
+                 " (BierNr      INT PRIMARY KEY AUTO_INCREMENT NOT NULL, " +
+                 "  Naam        VARCHAR(100)                NOT NULL , " +
+                 "  BrouwerNr   INT, " +
+                 "  Alcohol     DOUBLE                      NOT NULL   " +
+                " ) ";
+
+        createTableImpl(connection, sql);
+
+        sql = "CREATE TABLE IF NOT EXISTS BROUWER_ACERTA"  +
+                " (BrouwerNr   INT PRIMARY KEY AUTO_INCREMENT NOT NULL, " +
+                "  Naam        VARCHAR(100), " +
+                "  Locatie     VARCHAR(100) " +
                 " ) ";
 
         createTableImpl(connection, sql);
@@ -53,7 +68,6 @@ public class CreateDatabase {
             Statement stmt = connection.createStatement();
             int dummyReturnValue = stmt.executeUpdate(sql);
             stmt.close();
-
     }
 
 }
