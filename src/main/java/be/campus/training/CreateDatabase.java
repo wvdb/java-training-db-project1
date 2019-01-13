@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Created by wvdbrand on 18/09/2017.
+ * Created by wvdbrand on 06/01/2019.
  */
 public class CreateDatabase {
     private static final Logger LOGGER = LogManager.getLogger(CreateDatabase.class);

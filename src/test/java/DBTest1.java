@@ -14,7 +14,7 @@ public class DBTest1 {
     private static final Logger LOGGER = LogManager.getLogger(DBTest1.class);
 
     @Test
-    public void dummyTestHappyFlow() {
+    public void db1Test() {
         // given - my database is up and running and my database has been created
 
         // when

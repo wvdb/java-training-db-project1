@@ -201,7 +201,7 @@ public class MyApplicationMySQL {
 
     private static void oefeningTransactions7() throws InterruptedException {
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", ROOT, EMPTY_ROOT_PASSWORD);) {
-            connection.setAutoCommit(false);
+//            connection.setAutoCommit(false);
 
             // with this transaction-isolation we allow a dirty read
             // * delete has been done by second transaction but has not been committed
@@ -209,18 +209,14 @@ public class MyApplicationMySQL {
 
             connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 
-            // with this transaction-isolation we allow a dirty read
-            // * delete has been done by second transaction but has not been committed
-            // * the count(*) doesn't take into account the delete
-
-//            connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 
 //            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
 
             // let's sleep a little so we can modify the DB
-            LOGGER.info("Ready to sleep");
-            Thread.sleep(30_000);
-            LOGGER.info("We slept well");
+//            LOGGER.info("Ready to sleep");
+//            Thread.sleep(30_000);
+//            LOGGER.info("We slept well");
 
             PreparedStatement stmt = connection.prepareStatement(SQL_7_BEER);
             ResultSet resultSet = stmt.executeQuery();
