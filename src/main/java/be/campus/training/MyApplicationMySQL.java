@@ -276,10 +276,6 @@ public class MyApplicationMySQL {
              PreparedStatement stmt = connection.prepareStatement(SQL_11_BEER, Statement.RETURN_GENERATED_KEYS) ) {
 
             File file = new File(SEEFBIER_LOGO_LOCAAL_FILE);
-            // werkt niet tgv spaces
-//            ClassLoader classLoader = this.getClass().getClassLoader();
-//            File file = new File(classLoader.getResource(SEEFBIER_LOGO_RESOURCE_FILE).getFile());
-
             FileInputStream fileInputStream = new FileInputStream(file);
             stmt.setBinaryStream(1, fileInputStream);
 
@@ -301,7 +297,7 @@ public class MyApplicationMySQL {
 
     private static void oefeningStoredProc99() {
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/bieren", ROOT, EMPTY_ROOT_PASSWORD);
-             CallableStatement stmt = connection.prepareCall("call myStoredProc1(14, 15)") ) {
+            CallableStatement stmt = connection.prepareCall("call myStoredProc1(14, 15)") ) {
             ResultSet resultSet = stmt.executeQuery();
             logResultsetBeers99(resultSet);
         } catch (SQLException e) {
