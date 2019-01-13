@@ -5,8 +5,10 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.FileNotFoundException;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.UUID;
 
 /**
  * Created by wvdbrand on 14/09/2017.
@@ -14,7 +16,7 @@ import java.util.Scanner;
 public class MyApplicationH2 {
     private static final Logger LOGGER = LogManager.getLogger(MyApplicationH2.class);
 
-    private static final String SQL_INSERT_BIER_STELLA =
+    public static final String SQL_INSERT_BIER_STELLA =
             " INSERT into BIER_ACERTA (Naam, Alcohol) " +
                     " VALUES ('Stella', 4.5) ";
 
@@ -29,6 +31,9 @@ public class MyApplicationH2 {
     private static final String SQL_INSERT_PROJECT =
             " INSERT into PROJECT (ID, NAME, START_DATE) " +
                     " VALUES (?, ?, ?) ";
+
+    private static final String SQL_SELECT_PROJECT =
+            " select ID, NAME, START_DATE from PROJECT";
 
     private static final String SQL_INSERT_BROUWER =
             " INSERT into BROUWER_ACERTA (Naam, Locatie) " +
@@ -84,6 +89,13 @@ public class MyApplicationH2 {
             case 6:
                 MyApplicationH2.oefening6PrepareStatement();
                 break;
+            case 8:
+                MyApplicationH2.oefening8BatchUpdate();
+                break;
+            case 99:
+                MyApplicationH2.oefening99AProjectUUID();
+                MyApplicationH2.oefening99BProjectUUID();
+                break;
             default:
                 LOGGER.error("Geen oefening voorzien");
         }
@@ -103,7 +115,7 @@ public class MyApplicationH2 {
         }
     }
 
-    private static void oefeningInsertBeer(String insertStatement) {
+    public static void oefeningInsertBeer(String insertStatement) {
         try (Connection connection = DriverManager.getConnection("jdbc:h2:file:./bieren_training_h2.db");
             PreparedStatement stmt = connection.prepareStatement(insertStatement, Statement.RETURN_GENERATED_KEYS) ) {
 
@@ -189,6 +201,47 @@ public class MyApplicationH2 {
         }
     }
 
+    private static void oefening8BatchUpdate() {
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:file:./bieren_training_h2.db");
+            Statement stmt = connection.createStatement()) {
+            stmt.addBatch(SQL_UPDATE_BIER);
+            stmt.addBatch(SQL_UPDATE_BIER);
+            int[] results = stmt.executeBatch();
+            for (int result : results) {
+                System.out.println("Aantal gewijzigde rijen = " + result);
+            }
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (SQLException e) {
+            LOGGER.error("!!!Error when executing sql. Exception = {}, message = {}.", e, e.getMessage());
+            System.exit(-1);
+        }
+    }
+
+    private static void oefening99AProjectUUID() {
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:file:./bieren_training_h2.db");
+            PreparedStatement stmt = connection.prepareStatement(SQL_INSERT_PROJECT)) {
+            stmt.setString(1, UUID.randomUUID().toString());
+            stmt.setString(2, "Project 1");
+            stmt.setDate(3, Date.valueOf(LocalDate.now()));
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.error("!!!Error when executing sql. Exception = {}, message = {}.", e, e.getMessage());
+            System.exit(-1);
+        }
+    }
+
+    private static void oefening99BProjectUUID() {
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:file:./bieren_training_h2.db");
+             PreparedStatement stmt = connection.prepareStatement(SQL_SELECT_PROJECT)) {
+            ResultSet resultSet = stmt.executeQuery();
+            logResultsetProjects(resultSet);
+        } catch (SQLException e) {
+            LOGGER.error("!!!Error when executing sql. Exception = {}, message = {}.", e, e.getMessage());
+            System.exit(-1);
+        }
+    }
+
     private static void logResultsetBeers(ResultSet resultSet) throws SQLException {
         int numRowsRetrieved=0;
         while (resultSet.next()) {
@@ -223,6 +276,12 @@ public class MyApplicationH2 {
             numRowsRetrieved +=1;
         } while (resultSet.previous());
         LOGGER.info("Number of rows retrieved = {}.", numRowsRetrieved);
+    }
+
+    private static void logResultsetProjects(ResultSet resultSet) throws SQLException {
+        while (resultSet.next()) {
+            LOGGER.info("Project: id: {}, naam: {}, startDate: {}.", resultSet.getString(1), resultSet.getString(2), resultSet.getDate(3));
+        }
     }
 
 }
